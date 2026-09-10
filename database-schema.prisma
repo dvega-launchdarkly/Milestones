@@ -1,0 +1,104 @@
+// Prisma schema for Music Tracking App
+// Models for parents, children, family members, songs, and interactions
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Parent/Guardian User
+model Parent {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String
+  passwordHash  String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  children      ChildProfile[]
+  familyMembers FamilyMember[]
+
+  @@map("parents")
+}
+
+// Child Profile
+model ChildProfile {
+  id        String   @id @default(cuid())
+  parentId  String
+  name      String
+  birthDate DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  parent       Parent @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  interactions Interaction[]
+
+  @@index([parentId])
+  @@map("child_profiles")
+}
+
+// Family Member (Grandparents, Aunts/Uncles - view-only for now)
+model FamilyMember {
+  id        String   @id @default(cuid())
+  parentId  String
+  email     String
+  name      String
+  role      String   @default("viewer") // "viewer" for now, could be "editor" later
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  parent Parent @relation(fields: [parentId], references: [id], onDelete: Cascade)
+
+  @@unique([parentId, email]) // One email per parent
+  @@index([parentId])
+  @@map("family_members")
+}
+
+// Spotify Song (cached from Spotify API)
+model Song {
+  id           String   @id @default(cuid())
+  spotifyId    String   @unique // Spotify track ID
+  title        String
+  artist       String
+  album        String
+  albumArtUrl  String?
+  duration     Int      // Duration in milliseconds
+  previewUrl   String?
+  spotifyUrl   String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  interactions Interaction[]
+
+  @@index([spotifyId])
+  @@map("songs")
+}
+
+// Interaction - tracks what media a child was exposed to and their reaction
+model Interaction {
+  id        String   @id @default(cuid())
+  childId   String
+  songId    String
+  rating    String   @default("neutral") // "thumbs_up", "thumbs_down", "neutral"
+  review    String?  // Optional text review/notes
+  exposedAt DateTime @default(now()) // When the child was exposed to this
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  child ChildProfile @relation(fields: [childId], references: [id], onDelete: Cascade)
+  song  Song         @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@index([childId])
+  @@index([songId])
+  @@index([exposedAt])
+  @@map("interactions")
+}
