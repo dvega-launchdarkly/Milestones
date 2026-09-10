@@ -3,6 +3,9 @@ import { prisma } from '@/lib/db'
 import { getSpotifyTrack, getSpotifyTracksWithGenres } from '@/lib/spotify'
 import { NextRequest, NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 export async function GET(request: NextRequest) {
   try {
     const parent = await getCurrentParent()

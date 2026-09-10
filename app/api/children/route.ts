@@ -4,6 +4,9 @@ import { parseDateOnly } from '@/lib/dates'
 import { prisma } from '@/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 /**
  * GET /api/children
  * Get all children for the current parent

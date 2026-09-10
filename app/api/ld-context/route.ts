@@ -1,6 +1,9 @@
 import { getLdContextForCurrentUser } from '@/lib/ld-context-server'
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 export async function GET() {
   try {
     const context = await getLdContextForCurrentUser()

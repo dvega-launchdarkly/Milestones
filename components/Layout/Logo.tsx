@@ -6,15 +6,15 @@ interface LogoProps {
   className?: string
 }
 
-export default function Logo({ href = '/', className = 'h-9 w-auto' }: LogoProps) {
+export default function Logo({ href = '/', className = 'h-16 w-auto sm:h-20 md:h-24' }: LogoProps) {
   return (
     <Link href={href} className="inline-flex items-center">
       <Image
-        src="/MILESTONES3.png"
+        src="/MILESTONES.png"
         alt="Milestones"
-        width={200}
-        height={50}
-        className={`${className} rounded-md`}
+        width={1000}
+        height={250}
+        className={className}
         priority
       />
     </Link>

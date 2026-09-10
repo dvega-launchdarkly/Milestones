@@ -5,8 +5,8 @@ import Logo from '@/components/Layout/Logo'
 
 export default function Navbar() {
   return (
-    <nav className="bg-ink px-8 py-4 flex items-center justify-between">
-      <Logo className="h-8 w-auto" />
+    <nav className="bg-ink px-8 py-2 flex items-center justify-between">
+      <Logo />
       <UserButton
         afterSignOutUrl="/"
         appearance={{

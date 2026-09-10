@@ -2,6 +2,9 @@ import { requireAuth } from '@/lib/auth'
 import { searchSpotifyTracks } from '@/lib/spotify'
 import { NextRequest, NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 export async function GET(request: NextRequest) {
   try {
     requireAuth()

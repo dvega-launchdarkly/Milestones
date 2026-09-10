@@ -13,6 +13,9 @@ const questrial = Questrial({
 export const metadata: Metadata = {
   title: 'Milestones - Track Your Child\'s Musical Journey',
   description: 'Track what music, movies, TV, and books your children enjoy and understand their growing preferences.',
+  icons: {
+    icon: [{ url: '/favicon.svg', type: 'image/svg+xml' }],
+  },
 }
 
 export default function RootLayout({

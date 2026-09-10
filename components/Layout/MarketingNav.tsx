@@ -12,7 +12,7 @@ export default function MarketingNav() {
   const { isLoaded, isSignedIn } = useUser()
 
   return (
-    <nav className="bg-ink px-8 py-4 flex items-center justify-between">
+    <nav className="bg-ink px-8 py-2 flex items-center justify-between">
       <Logo />
       <div className="flex items-center gap-4">
         <Link href="/" className={linkClass}>
