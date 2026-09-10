@@ -2,6 +2,7 @@
 
 import ChildForm, { type ChildFormValues } from '@/components/Child/ChildForm'
 import { toDateInputValue } from '@/lib/dates'
+import { requestLdContextRefresh } from '@/lib/ld-context'
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -51,6 +52,7 @@ export default function EditChildPage() {
       if (!res.ok) {
         throw new Error(data.error || 'Failed to update child')
       }
+      requestLdContextRefresh()
       router.push('/dashboard')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update child')

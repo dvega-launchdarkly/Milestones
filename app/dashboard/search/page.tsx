@@ -5,6 +5,7 @@ import InteractionForm from '@/components/Interaction/InteractionForm'
 import SongSearchBar from '@/components/Song/SongSearchBar'
 import SongSearchResults from '@/components/Song/SongSearchResults'
 import { childDisplayName } from '@/lib/child-icon-ids'
+import { requestLdContextRefresh } from '@/lib/ld-context'
 import { SpotifySearchResult } from '@/lib/types'
 
 interface Child {
@@ -66,6 +67,7 @@ export default function SearchPage() {
     if (!res.ok) throw new Error(data.error || 'Failed to save')
     setSelectedSong(null)
     setSaved(true)
+    requestLdContextRefresh()
   }
 
   return (

@@ -5,6 +5,7 @@ import ConfirmDialog from '@/components/Common/ConfirmDialog'
 import { useHistoryEnabled } from '@/components/LaunchDarkly/LaunchDarklyProvider'
 import { childDisplayName } from '@/lib/child-icon-ids'
 import { formatDateOnly } from '@/lib/dates'
+import { requestLdContextRefresh } from '@/lib/ld-context'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
@@ -57,6 +58,7 @@ export default function DashboardPage() {
       }
       setChildren((current) => current.filter((child) => child.id !== childToDelete.id))
       setChildToDelete(null)
+      requestLdContextRefresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete child')
     } finally {

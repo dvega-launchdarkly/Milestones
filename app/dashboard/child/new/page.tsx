@@ -1,6 +1,7 @@
 'use client'
 
 import ChildForm, { type ChildFormValues } from '@/components/Child/ChildForm'
+import { requestLdContextRefresh } from '@/lib/ld-context'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
@@ -23,6 +24,7 @@ export default function NewChildPage() {
       if (!res.ok) {
         throw new Error(data.error || 'Failed to create child')
       }
+      requestLdContextRefresh()
       router.push('/dashboard')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create child')

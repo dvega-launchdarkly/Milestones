@@ -1,5 +1,6 @@
 import { basicLogger, init, type LDClient } from '@launchdarkly/node-server-sdk'
 import { HISTORY_FLAG_KEY } from './flags'
+import { getLdContextForCurrentUser } from './ld-context-server'
 
 const globalForLD = globalThis as unknown as { ldClient?: LDClient; ldReady?: Promise<LDClient | null> }
 
@@ -26,18 +27,13 @@ async function getServerClient(): Promise<LDClient | null> {
   return globalForLD.ldReady
 }
 
-export async function isHistoryEnabled(userId: string | null): Promise<boolean> {
+export async function isHistoryEnabled(): Promise<boolean> {
   const client = await getServerClient()
   if (!client) return false
 
   try {
-    return await client.variation(
-      HISTORY_FLAG_KEY,
-      userId
-        ? { kind: 'user', key: userId }
-        : { kind: 'user', key: 'anonymous', anonymous: true },
-      false
-    )
+    const context = await getLdContextForCurrentUser()
+    return await client.variation(HISTORY_FLAG_KEY, context, false)
   } catch {
     return false
   }
