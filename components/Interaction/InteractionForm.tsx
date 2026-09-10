@@ -64,7 +64,7 @@ export default function InteractionForm({
         <div className="flex gap-4">
           <button
             onClick={() => setRating('thumbs_up')}
-            className={`flex-1 py-4 px-4 border-2 rounded-lg font-semibold transition-all ${
+            className={`flex-1 py-4 px-4 border-2 rounded-full font-semibold transition-all ${
               rating === 'thumbs_up'
                 ? 'bg-green-50 border-green-500 text-green-700'
                 : 'bg-surface border-ink/20 text-ink hover:border-green-300'
@@ -75,7 +75,7 @@ export default function InteractionForm({
           </button>
           <button
             onClick={() => setRating('neutral')}
-            className={`flex-1 py-4 px-4 border-2 rounded-lg font-semibold transition-all ${
+            className={`flex-1 py-4 px-4 border-2 rounded-full font-semibold transition-all ${
               rating === 'neutral'
                 ? 'bg-blue-50 border-blue-500 text-blue-700'
                 : 'bg-surface border-ink/20 text-ink hover:border-blue-300'
@@ -86,7 +86,7 @@ export default function InteractionForm({
           </button>
           <button
             onClick={() => setRating('thumbs_down')}
-            className={`flex-1 py-4 px-4 border-2 rounded-lg font-semibold transition-all ${
+            className={`flex-1 py-4 px-4 border-2 rounded-full font-semibold transition-all ${
               rating === 'thumbs_down'
                 ? 'bg-red-50 border-red-500 text-red-700'
                 : 'bg-surface border-ink/20 text-ink hover:border-red-300'

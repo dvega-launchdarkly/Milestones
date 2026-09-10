@@ -40,7 +40,7 @@ export default function Home() {
 
         <div className="grid md:grid-cols-3 gap-8 py-20">
           <div className="card">
-            <div className="text-4xl mb-4">🎵</div>
+        
             <h3 className="text-xl font-semibold mb-2">Search & Log Music</h3>
             <p className="text-gray-600">
               Search Spotify's massive catalog and instantly log songs your child is exposed to.
@@ -48,7 +48,6 @@ export default function Home() {
           </div>
 
           <div className="card">
-            <div className="text-4xl mb-4">👍</div>
             <h3 className="text-xl font-semibold mb-2">Rate Preferences</h3>
             <p className="text-gray-600">
               Track likes and dislikes. Add notes to remember what made them dance or smile.
@@ -56,7 +55,6 @@ export default function Home() {
           </div>
 
           <div className="card">
-            <div className="text-4xl mb-4">👨‍👩‍👧</div>
             <h3 className="text-xl font-semibold mb-2">Share with Family</h3>
             <p className="text-gray-600">
               Give grandparents and family members view-only access to see your child's journey.
@@ -66,7 +64,7 @@ export default function Home() {
 
         <footer className="border-t border-gray-200 py-8 text-center text-gray-600">
           <p>
-            &copy; 2024 Milestones. Built with ❤️ for parents.{' '}
+            &copy; 2026 Milestones. Built for my kids.{' '}
             <Link href="/about" className="text-ink hover:underline">
               How it works
             </Link>

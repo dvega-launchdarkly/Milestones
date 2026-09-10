@@ -6,7 +6,7 @@ import Logo from '@/components/Layout/Logo'
 
 const linkClass = 'text-surface font-medium hover:text-surface/80'
 const lightButtonClass =
-  'inline-flex items-center justify-center px-4 py-2 bg-surface text-ink font-medium rounded-lg hover:bg-surface/90 transition-colors'
+  'inline-flex items-center justify-center px-4 py-2 bg-surface text-ink font-medium rounded-full hover:bg-surface/90 transition-colors'
 
 export default function MarketingNav() {
   const { isLoaded, isSignedIn } = useUser()

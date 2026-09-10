@@ -120,7 +120,7 @@ export default function DashboardPage() {
               <button
                 type="button"
                 onClick={() => setChildToDelete(child)}
-                className="inline-flex items-center justify-center px-4 py-2 border border-red-200 text-red-700 font-medium rounded-lg hover:bg-red-50 transition-colors"
+                className="inline-flex items-center justify-center px-4 py-2 border border-red-200 text-red-700 font-medium rounded-full hover:bg-red-50 transition-colors"
               >
                 Delete
               </button>

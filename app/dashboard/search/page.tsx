@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import ChildIcon from '@/components/Child/ChildIcon'
 import InteractionForm from '@/components/Interaction/InteractionForm'
 import SongSearchBar from '@/components/Song/SongSearchBar'
 import SongSearchResults from '@/components/Song/SongSearchResults'
@@ -12,6 +13,7 @@ interface Child {
   id: string
   firstName: string
   lastName: string
+  icon: string
 }
 
 export default function SearchPage() {
@@ -77,23 +79,31 @@ export default function SearchPage() {
       {children.length === 0 ? (
         <p className="text-gray-600">Add a child profile before logging songs.</p>
       ) : (
-        <div className="mb-6">
-          <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="child">
-            Logging for
-          </label>
-          <select
-            id="child"
-            className="input-field"
-            value={childId}
-            onChange={(e) => setChildId(e.target.value)}
-          >
-            {children.map((child) => (
-              <option key={child.id} value={child.id}>
-                {childDisplayName(child)}
-              </option>
-            ))}
-          </select>
-        </div>
+        <fieldset className="mb-6">
+          <legend className="block text-sm font-semibold text-gray-700 mb-2">Logging for</legend>
+          <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Logging for">
+            {children.map((child) => {
+              const selected = childId === child.id
+              return (
+                <button
+                  key={child.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() => setChildId(child.id)}
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border font-medium transition-colors ${
+                    selected
+                      ? 'bg-ink text-white border-ink'
+                      : 'bg-surface text-ink border-ink/30 hover:border-ink'
+                  }`}
+                >
+                  <ChildIcon icon={child.icon} className="h-4 w-4" />
+                  {childDisplayName(child)}
+                </button>
+              )
+            })}
+          </div>
+        </fieldset>
       )}
 
       <SongSearchBar onSearch={handleSearch} loading={loading} />
