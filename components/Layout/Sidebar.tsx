@@ -1,17 +1,27 @@
 'use client'
 
 import { useHistoryEnabled } from '@/components/LaunchDarkly/LaunchDarklyProvider'
+import {
+  History,
+  Home,
+  Info,
+  LayoutDashboard,
+  Search,
+  Settings,
+  Users,
+  type LucideIcon,
+} from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-const navigation = [
-  { href: '/', label: 'Home', icon: '🏠' },
-  { href: '/dashboard', label: 'Dashboard', icon: '📊' },
-  { href: '/dashboard/search', label: 'Search Music', icon: '🔍' },
-  { href: '/dashboard/history', label: 'History', icon: '📋' },
-  { href: '/dashboard/settings/family', label: 'Family', icon: '👨‍👩‍👧' },
-  { href: '/dashboard/settings', label: 'Settings', icon: '⚙️' },
-  { href: '/about', label: 'About', icon: 'ℹ️' },
+const navigation: Array<{ href: string; label: string; Icon: LucideIcon }> = [
+  { href: '/', label: 'Home', Icon: Home },
+  { href: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard },
+  { href: '/dashboard/search', label: 'Search Music', Icon: Search },
+  { href: '/dashboard/history', label: 'Family History', Icon: History },
+  { href: '/dashboard/settings/family', label: 'Invite Family', Icon: Users },
+  { href: '/dashboard/settings', label: 'Settings', Icon: Settings },
+  { href: '/about', label: 'About', Icon: Info },
 ]
 
 export default function Sidebar() {
@@ -44,7 +54,7 @@ export default function Sidebar() {
                       : 'text-ink/80 hover:bg-ink/10'
                   }`}
                 >
-                  <span className="text-xl">{item.icon}</span>
+                  <item.Icon className="h-5 w-5 shrink-0" aria-hidden />
                   {item.label}
                 </Link>
               )

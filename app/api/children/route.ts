@@ -17,10 +17,18 @@ export async function GET() {
 
     const children = await prisma.childProfile.findMany({
       where: { parentId: parent.id },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { birthDate: 'desc' },
+      include: {
+        _count: { select: { interactions: true } },
+      },
     })
 
-    return NextResponse.json({ children })
+    return NextResponse.json({
+      children: children.map(({ _count, ...child }) => ({
+        ...child,
+        songCount: _count.interactions,
+      })),
+    })
   } catch (error) {
     console.error('Error fetching children:', error)
     return NextResponse.json(

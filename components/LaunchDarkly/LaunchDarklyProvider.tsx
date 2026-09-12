@@ -1,6 +1,6 @@
 'use client'
 
-import { HISTORY_FLAG_KEY } from '@/lib/flags'
+import { HISTORY_FLAG_KEY, UPDATED_CHILDREN_CARD_FLAG_KEY } from '@/lib/flags'
 import {
   ANONYMOUS_LD_CONTEXT,
   LD_CONTEXT_REFRESH_EVENT,
@@ -28,10 +28,19 @@ const LDProvider = clientSideID
     )
   : null
 
-const HistoryEnabledContext = createContext(false)
+const defaultFlags = {
+  historyEnabled: false,
+  updatedChildrenCard: false,
+}
+
+const FlagsContext = createContext(defaultFlags)
 
 export function useHistoryEnabled() {
-  return useContext(HistoryEnabledContext)
+  return useContext(FlagsContext).historyEnabled
+}
+
+export function useUpdatedChildrenCard() {
+  return useContext(FlagsContext).updatedChildrenCard
 }
 
 function IdentifyClerkUser({ children }: { children: ReactNode }) {
@@ -93,27 +102,26 @@ function IdentifyClerkUser({ children }: { children: ReactNode }) {
   return <>{children}</>
 }
 
-function HistoryFlagBridge({ children }: { children: ReactNode }) {
-  const enabled = useBoolVariation(HISTORY_FLAG_KEY, false)
+function FlagsBridge({ children }: { children: ReactNode }) {
+  const historyEnabled = useBoolVariation(HISTORY_FLAG_KEY, false)
+  const updatedChildrenCard = useBoolVariation(UPDATED_CHILDREN_CARD_FLAG_KEY, false)
 
   return (
-    <HistoryEnabledContext.Provider value={enabled}>
+    <FlagsContext.Provider value={{ historyEnabled, updatedChildrenCard }}>
       {children}
-    </HistoryEnabledContext.Provider>
+    </FlagsContext.Provider>
   )
 }
 
 export default function LaunchDarklyProvider({ children }: { children: ReactNode }) {
   if (!LDProvider) {
-    return (
-      <HistoryEnabledContext.Provider value={false}>{children}</HistoryEnabledContext.Provider>
-    )
+    return <FlagsContext.Provider value={defaultFlags}>{children}</FlagsContext.Provider>
   }
 
   return (
     <LDProvider>
       <IdentifyClerkUser>
-        <HistoryFlagBridge>{children}</HistoryFlagBridge>
+        <FlagsBridge>{children}</FlagsBridge>
       </IdentifyClerkUser>
     </LDProvider>
   )

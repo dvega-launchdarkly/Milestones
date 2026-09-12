@@ -1,28 +1,23 @@
 'use client'
 
-import ChildIcon from '@/components/Child/ChildIcon'
+import ChildCard, { type DashboardChild } from '@/components/Child/ChildCard'
 import ConfirmDialog from '@/components/Common/ConfirmDialog'
-import { useHistoryEnabled } from '@/components/LaunchDarkly/LaunchDarklyProvider'
+import {
+  useHistoryEnabled,
+  useUpdatedChildrenCard,
+} from '@/components/LaunchDarkly/LaunchDarklyProvider'
 import { childDisplayName } from '@/lib/child-icon-ids'
-import { formatDateOnly } from '@/lib/dates'
 import { requestLdContextRefresh } from '@/lib/ld-context'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-interface Child {
-  id: string
-  firstName: string
-  lastName: string
-  icon: string
-  birthDate: string
-}
-
 export default function DashboardPage() {
-  const [children, setChildren] = useState<Child[]>([])
+  const [children, setChildren] = useState<DashboardChild[]>([])
   const [loading, setLoading] = useState(true)
   const historyEnabled = useHistoryEnabled()
+  const updatedChildrenCard = useUpdatedChildrenCard()
   const [error, setError] = useState<string | null>(null)
-  const [childToDelete, setChildToDelete] = useState<Child | null>(null)
+  const [childToDelete, setChildToDelete] = useState<DashboardChild | null>(null)
   const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
@@ -95,37 +90,13 @@ export default function DashboardPage() {
 
       <div className="grid gap-4 md:grid-cols-2">
         {children.map((child) => (
-          <div key={child.id} className="card">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-ink/10 text-ink">
-                <ChildIcon icon={child.icon} className="h-6 w-6" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-ink">{childDisplayName(child)}</h2>
-                <p className="text-sm text-gray-500">Born {formatDateOnly(child.birthDate)}</p>
-              </div>
-            </div>
-            <div className="mt-4 flex flex-wrap gap-3">
-              <Link href="/dashboard/search" className="btn-primary">
-                Log a song
-              </Link>
-              <Link href={`/dashboard/child/${child.id}/edit`} className="btn-secondary">
-                Edit
-              </Link>
-              {historyEnabled && (
-                <Link href="/dashboard/history" className="btn-outline">
-                  View history
-                </Link>
-              )}
-              <button
-                type="button"
-                onClick={() => setChildToDelete(child)}
-                className="inline-flex items-center justify-center px-4 py-2 border border-red-200 text-red-700 font-medium rounded-full hover:bg-red-50 transition-colors"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
+          <ChildCard
+            key={child.id}
+            child={child}
+            updatedLayout={updatedChildrenCard}
+            historyEnabled={historyEnabled}
+            onDelete={() => setChildToDelete(child)}
+          />
         ))}
       </div>
 
