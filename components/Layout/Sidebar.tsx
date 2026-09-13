@@ -24,7 +24,7 @@ const navigation: Array<{ href: string; label: string; Icon: LucideIcon }> = [
   { href: '/about', label: 'About', Icon: Info },
 ]
 
-export default function Sidebar() {
+export default function Sidebar({ mobileOpen = false }: { mobileOpen?: boolean }) {
   const pathname = usePathname()
   const historyEnabled = useHistoryEnabled()
   const items = historyEnabled
@@ -32,7 +32,12 @@ export default function Sidebar() {
     : navigation.filter((item) => item.href !== '/dashboard/history')
 
   return (
-    <aside className="w-64 bg-surface border-r border-ink/15 p-6">
+    <aside
+      id="dashboard-sidebar"
+      className={`${
+        mobileOpen ? 'block' : 'hidden'
+      } md:block w-full md:w-64 shrink-0 bg-surface border-b border-ink/15 md:border-b-0 md:border-r p-6`}
+    >
       <div className="space-y-8">
         <div>
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">

@@ -11,8 +11,8 @@ export default function Home() {
     <main className="min-h-screen bg-surface">
       <MarketingNav />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="py-20 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-ink mb-6">
+        <div className="pt-20 pb-2.5 md:py-20 text-center">
+          <h1 className="text-[2rem] sm:text-5xl md:text-6xl font-bold text-ink mb-6">
             Track Your Child's Musical Journey
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
@@ -38,7 +38,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 py-20">
+        <div className="grid md:grid-cols-3 gap-8 pt-5 pb-20 md:py-20">
           <div className="card">
         
             <h3 className="text-xl font-semibold mb-2">Search & Log Music</h3>
