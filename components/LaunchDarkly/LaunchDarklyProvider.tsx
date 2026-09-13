@@ -1,6 +1,10 @@
 'use client'
 
-import { HISTORY_FLAG_KEY, UPDATED_CHILDREN_CARD_FLAG_KEY } from '@/lib/flags'
+import {
+  HISTORY_FLAG_KEY,
+  SEARCH_MUSIC_V2_FLAG_KEY,
+  UPDATED_CHILDREN_CARD_FLAG_KEY,
+} from '@/lib/flags'
 import {
   ANONYMOUS_LD_CONTEXT,
   LD_CONTEXT_REFRESH_EVENT,
@@ -31,6 +35,7 @@ const LDProvider = clientSideID
 const defaultFlags = {
   historyEnabled: false,
   updatedChildrenCard: false,
+  searchMusicV2: false,
 }
 
 const FlagsContext = createContext(defaultFlags)
@@ -41,6 +46,10 @@ export function useHistoryEnabled() {
 
 export function useUpdatedChildrenCard() {
   return useContext(FlagsContext).updatedChildrenCard
+}
+
+export function useSearchMusicV2() {
+  return useContext(FlagsContext).searchMusicV2
 }
 
 function IdentifyClerkUser({ children }: { children: ReactNode }) {
@@ -105,9 +114,10 @@ function IdentifyClerkUser({ children }: { children: ReactNode }) {
 function FlagsBridge({ children }: { children: ReactNode }) {
   const historyEnabled = useBoolVariation(HISTORY_FLAG_KEY, false)
   const updatedChildrenCard = useBoolVariation(UPDATED_CHILDREN_CARD_FLAG_KEY, false)
+  const searchMusicV2 = useBoolVariation(SEARCH_MUSIC_V2_FLAG_KEY, false)
 
   return (
-    <FlagsContext.Provider value={{ historyEnabled, updatedChildrenCard }}>
+    <FlagsContext.Provider value={{ historyEnabled, updatedChildrenCard, searchMusicV2 }}>
       {children}
     </FlagsContext.Provider>
   )

@@ -11,6 +11,20 @@ export interface SpotifySearchResult {
   genres?: string[]
 }
 
+export interface SpotifyAlbumResult {
+  spotifyId: string
+  name: string
+  artist: string
+  albumArtUrl?: string
+  releaseDate?: string
+  totalTracks: number
+  spotifyUrl: string
+}
+
+export interface SpotifyAlbumDetail extends SpotifyAlbumResult {
+  tracks: SpotifySearchResult[]
+}
+
 export interface SpotifyTrack {
   id: string
   name: string

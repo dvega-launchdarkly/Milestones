@@ -5,9 +5,16 @@ import { useEffect, useState } from 'react'
 interface SongSearchBarProps {
   onSearch: (query: string) => void
   loading?: boolean
+  label?: string
+  placeholder?: string
 }
 
-export default function SongSearchBar({ onSearch, loading }: SongSearchBarProps) {
+export default function SongSearchBar({
+  onSearch,
+  loading,
+  label = 'Search for a song',
+  placeholder = 'Search by song title, artist, or album...',
+}: SongSearchBarProps) {
   const [query, setQuery] = useState('')
   const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(null)
 
@@ -20,7 +27,7 @@ export default function SongSearchBar({ onSearch, loading }: SongSearchBarProps)
       if (query.length >= 2) {
         onSearch(query)
       }
-    }, 500) // 500ms debounce
+    }, 700) // Debounced to keep keystrokes from burning Spotify's request quota
 
     setDebounceTimer(timer)
 
@@ -30,12 +37,12 @@ export default function SongSearchBar({ onSearch, loading }: SongSearchBarProps)
   return (
     <div className="card mb-6">
       <label className="block text-sm font-semibold text-gray-700 mb-2">
-        Search for a song
+        {label}
       </label>
       <div className="relative">
         <input
           type="text"
-          placeholder="Search by song title, artist, or album..."
+          placeholder={placeholder}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           disabled={loading}

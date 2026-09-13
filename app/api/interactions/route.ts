@@ -6,6 +6,8 @@ import { NextRequest, NextResponse } from 'next/server'
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
+const GENRE_BACKFILL_LIMIT = 5
+
 export async function GET(request: NextRequest) {
   try {
     const parent = await getCurrentParent()
@@ -32,9 +34,13 @@ export async function GET(request: NextRequest) {
       prisma.interaction.count({ where }),
     ])
 
+    // Each song needs a track and an artist lookup, so only a few are
+    // backfilled per request to stay inside Spotify's quota. The rest are
+    // picked up on later loads.
     const songsMissingGenres = interactions
       .map((item) => item.song)
       .filter((song) => song.genres.length === 0)
+      .slice(0, GENRE_BACKFILL_LIMIT)
 
     if (songsMissingGenres.length > 0) {
       try {
