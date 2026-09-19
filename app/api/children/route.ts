@@ -1,4 +1,4 @@
-import { getCurrentParent } from '@/lib/auth'
+import { getCurrentFamilyContext, requireFamilyEditAccess } from '@/lib/auth'
 import { parseChildInput } from '@/lib/child'
 import { parseDateOnly } from '@/lib/dates'
 import { prisma } from '@/lib/db'
@@ -13,10 +13,10 @@ export const runtime = 'nodejs'
  */
 export async function GET() {
   try {
-    const parent = await getCurrentParent()
+    const { family } = await getCurrentFamilyContext()
 
     const children = await prisma.childProfile.findMany({
-      where: { parentId: parent.id },
+      where: { familyId: family.id },
       orderBy: { birthDate: 'desc' },
       include: {
         _count: { select: { interactions: true } },
@@ -44,7 +44,7 @@ export async function GET() {
  */
 export async function POST(request: NextRequest) {
   try {
-    const parent = await getCurrentParent()
+    const { parent, family } = await requireFamilyEditAccess()
     const parsed = parseChildInput(await request.json())
 
     if ('error' in parsed) {
@@ -53,6 +53,8 @@ export async function POST(request: NextRequest) {
 
     const child = await prisma.childProfile.create({
       data: {
+        familyId: family.id,
+        // Written alongside familyId until the contract migration drops it.
         parentId: parent.id,
         firstName: parsed.firstName,
         lastName: parsed.lastName,

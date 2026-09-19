@@ -6,7 +6,7 @@ export const ANONYMOUS_LD_CONTEXT = {
   anonymous: true,
 }
 
-export type FamilyRole = 'parent' | 'viewer'
+export type FamilyRole = 'owner' | 'editor' | 'viewer'
 export type AgeBand = 'infant' | 'toddler' | 'preschool' | 'school-age' | 'teen'
 
 export type LdUserAttributes = {
@@ -17,6 +17,7 @@ export type LdUserAttributes = {
   createdAt?: string
   accountAgeDays?: number
   role: FamilyRole
+  relationship?: string
   childCount: number
   hasChildren: boolean
   hasLoggedSong: boolean
@@ -28,6 +29,7 @@ export type LdFamilyAttributes = {
   childCount: number
   hasChildren: boolean
   familyMemberCount: number
+  relationships?: string[]
   youngestChildAgeMonths?: number
   oldestChildAgeMonths?: number
   ageBands?: AgeBand[]
@@ -48,11 +50,13 @@ export type LdContextSource = {
   email?: string | null
   name?: string | null
   accountCreatedAt?: Date | number | string | null
-  parentId: string
+  familyId: string
   role?: FamilyRole
+  relationship?: string | null
   childBirthDates: Date[]
   interactionCount: number
   familyMemberCount: number
+  relationships?: string[]
 }
 
 const AGE_BAND_ORDER: AgeBand[] = ['infant', 'toddler', 'preschool', 'school-age', 'teen']
@@ -103,7 +107,10 @@ export function buildClerkOnlyUserContext(input: {
   email?: string | null
   name?: string | null
   createdAt?: Date | number | string | null
-}): { kind: 'user' } & Omit<LdUserAttributes, 'childCount' | 'hasChildren' | 'hasLoggedSong' | 'interactionCount'> {
+}): { kind: 'user' } & Omit<
+  LdUserAttributes,
+  'role' | 'relationship' | 'childCount' | 'hasChildren' | 'hasLoggedSong' | 'interactionCount'
+> {
   const email = input.email?.trim() || undefined
   const name = input.name?.trim() || undefined
 
@@ -115,7 +122,6 @@ export function buildClerkOnlyUserContext(input: {
     emailDomain: emailDomainFrom(email),
     createdAt: toIsoDate(input.createdAt),
     accountAgeDays: accountAgeDaysFrom(input.createdAt),
-    role: 'parent' as const,
   })
 }
 
@@ -133,7 +139,8 @@ export function buildLdMultiContext(source: LdContextSource): LdMultiContext {
     emailDomain: emailDomainFrom(email),
     createdAt: toIsoDate(source.accountCreatedAt),
     accountAgeDays: accountAgeDaysFrom(source.accountCreatedAt),
-    role: source.role ?? 'parent',
+    role: source.role ?? 'owner',
+    relationship: source.relationship ?? undefined,
     childCount,
     hasChildren: childCount > 0,
     hasLoggedSong: source.interactionCount > 0,
@@ -141,10 +148,11 @@ export function buildLdMultiContext(source: LdContextSource): LdMultiContext {
   }) satisfies LdUserAttributes
 
   const family = omitUndefined({
-    key: source.parentId,
+    key: source.familyId,
     childCount,
     hasChildren: childCount > 0,
     familyMemberCount: source.familyMemberCount,
+    relationships: source.relationships?.length ? source.relationships : undefined,
     youngestChildAgeMonths: ages.length ? Math.min(...ages) : undefined,
     oldestChildAgeMonths: ages.length ? Math.max(...ages) : undefined,
     ageBands: ageBands.length ? ageBands : undefined,

@@ -2,6 +2,7 @@
 
 import {
   HISTORY_FLAG_KEY,
+  RELEASE_INVITE_FAMILY_FLAG_KEY,
   SEARCH_MUSIC_V2_FLAG_KEY,
   UPDATED_CHILDREN_CARD_FLAG_KEY,
 } from '@/lib/flags'
@@ -36,6 +37,7 @@ const defaultFlags = {
   historyEnabled: false,
   updatedChildrenCard: false,
   searchMusicV2: false,
+  releaseInviteFamily: false,
 }
 
 const FlagsContext = createContext(defaultFlags)
@@ -50,6 +52,10 @@ export function useUpdatedChildrenCard() {
 
 export function useSearchMusicV2() {
   return useContext(FlagsContext).searchMusicV2
+}
+
+export function useReleaseInviteFamily() {
+  return useContext(FlagsContext).releaseInviteFamily
 }
 
 function IdentifyClerkUser({ children }: { children: ReactNode }) {
@@ -115,9 +121,12 @@ function FlagsBridge({ children }: { children: ReactNode }) {
   const historyEnabled = useBoolVariation(HISTORY_FLAG_KEY, false)
   const updatedChildrenCard = useBoolVariation(UPDATED_CHILDREN_CARD_FLAG_KEY, false)
   const searchMusicV2 = useBoolVariation(SEARCH_MUSIC_V2_FLAG_KEY, false)
+  const releaseInviteFamily = useBoolVariation(RELEASE_INVITE_FAMILY_FLAG_KEY, false)
 
   return (
-    <FlagsContext.Provider value={{ historyEnabled, updatedChildrenCard, searchMusicV2 }}>
+    <FlagsContext.Provider
+      value={{ historyEnabled, updatedChildrenCard, searchMusicV2, releaseInviteFamily }}
+    >
       {children}
     </FlagsContext.Provider>
   )

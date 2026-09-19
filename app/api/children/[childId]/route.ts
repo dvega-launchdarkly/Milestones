@@ -28,7 +28,7 @@ export async function PUT(
   { params }: { params: { childId: string } }
 ) {
   try {
-    await verifyChildOwnership(params.childId)
+    await verifyChildOwnership(params.childId, { requireEdit: true })
     const parsed = parseChildInput(await request.json())
 
     if ('error' in parsed) {
@@ -60,7 +60,7 @@ export async function DELETE(
   { params }: { params: { childId: string } }
 ) {
   try {
-    await verifyChildOwnership(params.childId)
+    await verifyChildOwnership(params.childId, { requireEdit: true })
 
     await prisma.childProfile.delete({
       where: { id: params.childId },

@@ -1,5 +1,5 @@
 import { basicLogger, init, type LDClient } from '@launchdarkly/node-server-sdk'
-import { HISTORY_FLAG_KEY } from './flags'
+import { HISTORY_FLAG_KEY, RELEASE_INVITE_FAMILY_FLAG_KEY } from './flags'
 import { getLdContextForCurrentUser } from './ld-context-server'
 
 const globalForLD = globalThis as unknown as { ldClient?: LDClient; ldReady?: Promise<LDClient | null> }
@@ -27,14 +27,22 @@ async function getServerClient(): Promise<LDClient | null> {
   return globalForLD.ldReady
 }
 
-export async function isHistoryEnabled(): Promise<boolean> {
+async function isFlagEnabled(flagKey: string): Promise<boolean> {
   const client = await getServerClient()
   if (!client) return false
 
   try {
     const context = await getLdContextForCurrentUser()
-    return await client.variation(HISTORY_FLAG_KEY, context, false)
+    return await client.variation(flagKey, context, false)
   } catch {
     return false
   }
+}
+
+export async function isHistoryEnabled(): Promise<boolean> {
+  return isFlagEnabled(HISTORY_FLAG_KEY)
+}
+
+export async function isInviteFamilyEnabled(): Promise<boolean> {
+  return isFlagEnabled(RELEASE_INVITE_FAMILY_FLAG_KEY)
 }

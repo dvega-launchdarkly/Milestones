@@ -1,6 +1,7 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
-import { getCurrentParent } from './auth'
+import { getCurrentFamilyContext } from './auth'
 import { prisma } from './db'
+import { isFamilyRoleId } from './family-roles'
 import {
   ANONYMOUS_LD_CONTEXT,
   buildClerkOnlyUserContext,
@@ -25,30 +26,39 @@ export async function getLdContextForCurrentUser(): Promise<LdContext> {
   const clerkName = clerkDisplayName(clerkUser)
 
   try {
-    const parent = await getCurrentParent()
-    const [children, interactionCount, familyMemberCount] = await Promise.all([
+    const { parent, family, membership } = await getCurrentFamilyContext()
+    const [children, interactionCount, memberships] = await Promise.all([
       prisma.childProfile.findMany({
-        where: { parentId: parent.id },
+        where: { familyId: family.id },
         select: { birthDate: true },
       }),
       prisma.interaction.count({
-        where: { child: { parentId: parent.id } },
+        where: { child: { familyId: family.id } },
       }),
-      prisma.familyMember.count({
-        where: { parentId: parent.id },
+      prisma.familyMembership.findMany({
+        where: { familyId: family.id },
+        select: { relationship: true },
       }),
     ])
+
+    const relationships = memberships
+      .map((entry) => entry.relationship)
+      .filter((relationship): relationship is string => Boolean(relationship))
+      .filter((relationship, index, all) => all.indexOf(relationship) === index)
+      .sort()
 
     return buildLdMultiContext({
       clerkUserId: userId,
       email: parent.email || clerkEmail,
       name: parent.name || clerkName,
       accountCreatedAt: clerkUser?.createdAt ?? parent.createdAt,
-      parentId: parent.id,
-      role: 'parent',
+      familyId: family.id,
+      role: isFamilyRoleId(membership.role) ? membership.role : 'viewer',
+      relationship: membership.relationship,
       childBirthDates: children.map((child) => child.birthDate),
       interactionCount,
-      familyMemberCount,
+      familyMemberCount: memberships.length,
+      relationships,
     })
   } catch {
     return buildClerkOnlyUserContext({

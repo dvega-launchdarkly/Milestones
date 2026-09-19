@@ -1,5 +1,6 @@
 'use client'
 
+import ActiveFamilyBadge from '@/components/Family/ActiveFamilyBadge'
 import { useHistoryEnabled } from '@/components/LaunchDarkly/LaunchDarklyProvider'
 import {
   History,
@@ -19,7 +20,7 @@ const navigation: Array<{ href: string; label: string; Icon: LucideIcon }> = [
   { href: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard },
   { href: '/dashboard/search', label: 'Search Music', Icon: Search },
   { href: '/dashboard/history', label: 'Family History', Icon: History },
-  { href: '/dashboard/settings/family', label: 'Invite Family', Icon: Users },
+  { href: '/dashboard/settings/family', label: 'Family', Icon: Users },
   { href: '/dashboard/settings', label: 'Settings', Icon: Settings },
   { href: '/about', label: 'About', Icon: Info },
 ]
@@ -38,6 +39,8 @@ export default function Sidebar({ mobileOpen = false }: { mobileOpen?: boolean }
         mobileOpen ? 'block' : 'hidden'
       } md:block w-full md:w-64 shrink-0 bg-surface border-b border-ink/15 md:border-b-0 md:border-r p-6`}
     >
+      <ActiveFamilyBadge />
+
       <div className="space-y-8">
         <div>
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">

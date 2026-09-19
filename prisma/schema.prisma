@@ -13,23 +13,93 @@ datasource db {
 
 // Parent/Guardian User (auth handled by Clerk)
 model Parent {
-  id            String   @id @default(cuid())
-  clerkId       String   @unique // Clerk user ID
-  email         String   @unique
-  name          String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id             String   @id @default(cuid())
+  clerkId        String   @unique // Clerk user ID
+  email          String   @unique
+  name           String
+  // Which household this user is currently looking at, for people who belong
+  // to more than one (e.g. a grandparent with their own family)
+  activeFamilyId String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   // Relations
-  children      ChildProfile[]
-  familyMembers FamilyMember[]
+  children     ChildProfile[]
+  memberships  FamilyMembership[]
+  sentInvites  FamilyInvite[]     @relation("SentInvites")
+  activeFamily Family?            @relation("ActiveFamily", fields: [activeFamilyId], references: [id], onDelete: SetNull)
 
   @@map("parents")
+}
+
+// Household - owns the children. Adults join it through FamilyMembership.
+model Family {
+  id        String   @id @default(cuid())
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  children    ChildProfile[]
+  memberships FamilyMembership[]
+  invites     FamilyInvite[]
+  activeFor   Parent[]           @relation("ActiveFamily")
+
+  @@map("families")
+}
+
+// A pending invitation to join a household. Only the SHA-256 hash of the token
+// is stored - the raw value lives in the invite link and nowhere else.
+model FamilyInvite {
+  id           String    @id @default(cuid())
+  familyId     String
+  email        String
+  role         String    @default("viewer")
+  relationship String?
+  tokenHash    String    @unique
+  status       String    @default("pending") // "pending", "accepted", "revoked"
+  invitedById  String?
+  acceptedById String?
+  expiresAt    DateTime
+  acceptedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  family    Family  @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  invitedBy Parent? @relation("SentInvites", fields: [invitedById], references: [id], onDelete: SetNull)
+
+  @@index([familyId])
+  @@index([status])
+  @@map("family_invites")
+}
+
+// An adult's place in a household: what they may do (role) and who they are to
+// the children (relationship, see lib/family-roles.ts)
+model FamilyMembership {
+  id           String   @id @default(cuid())
+  familyId     String
+  parentId     String
+  role         String   @default("viewer") // "owner", "editor", "viewer"
+  relationship String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  family Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  parent Parent @relation(fields: [parentId], references: [id], onDelete: Cascade)
+
+  @@unique([familyId, parentId])
+  @@index([parentId])
+  @@map("family_memberships")
 }
 
 // Child Profile
 model ChildProfile {
   id        String   @id @default(cuid())
+  familyId  String
+  // Kept alongside familyId so a rollback to pre-household code still works.
+  // Dropped in a later migration once the household rollout has settled.
   parentId  String
   firstName String
   lastName  String
@@ -39,29 +109,13 @@ model ChildProfile {
   updatedAt DateTime @updatedAt
 
   // Relations
-  parent       Parent         @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  family       Family        @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  parent       Parent        @relation(fields: [parentId], references: [id], onDelete: Cascade)
   interactions Interaction[]
 
+  @@index([familyId])
   @@index([parentId])
   @@map("child_profiles")
-}
-
-// Family Member (Grandparents, Aunts/Uncles - view-only for now)
-model FamilyMember {
-  id        String   @id @default(cuid())
-  parentId  String
-  email     String
-  name      String
-  role      String   @default("viewer") // "viewer" for now, could be "editor" later
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  parent Parent @relation(fields: [parentId], references: [id], onDelete: Cascade)
-
-  @@unique([parentId, email]) // One email per parent
-  @@index([parentId])
-  @@map("family_members")
 }
 
 // Spotify Song (cached from Spotify API)

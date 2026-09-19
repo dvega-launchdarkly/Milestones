@@ -1,4 +1,4 @@
-import { getCurrentParent, verifyChildOwnership } from '@/lib/auth'
+import { getCurrentFamilyContext, verifyChildOwnership } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { getSpotifyTrack, getSpotifyTracksWithGenres } from '@/lib/spotify'
 import { NextRequest, NextResponse } from 'next/server'
@@ -10,7 +10,7 @@ const GENRE_BACKFILL_LIMIT = 5
 
 export async function GET(request: NextRequest) {
   try {
-    const parent = await getCurrentParent()
+    const { family } = await getCurrentFamilyContext()
     const childId = request.nextUrl.searchParams.get('childId')
     const limit = Number(request.nextUrl.searchParams.get('limit') || 20)
     const offset = Number(request.nextUrl.searchParams.get('offset') || 0)
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 
     const where = childId
       ? { childId }
-      : { child: { parentId: parent.id } }
+      : { child: { familyId: family.id } }
 
     const [interactions, total] = await Promise.all([
       prisma.interaction.findMany({
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    await verifyChildOwnership(childId)
+    await verifyChildOwnership(childId, { requireEdit: true })
 
     let song = await prisma.song.findUnique({ where: { spotifyId } })
     if (!song || song.genres.length === 0) {

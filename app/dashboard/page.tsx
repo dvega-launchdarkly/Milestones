@@ -19,6 +19,22 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null)
   const [childToDelete, setChildToDelete] = useState<DashboardChild | null>(null)
   const [deleting, setDeleting] = useState(false)
+  const [needsRelationship, setNeedsRelationship] = useState(false)
+
+  useEffect(() => {
+    const loadFamily = async () => {
+      try {
+        const res = await fetch('/api/family')
+        if (!res.ok) return
+        const data = await res.json()
+        setNeedsRelationship(!data.membership?.relationship)
+      } catch {
+        // The nudge is optional - never block the dashboard on it.
+      }
+    }
+
+    loadFamily()
+  }, [])
 
   useEffect(() => {
     const loadChildren = async () => {
@@ -72,6 +88,20 @@ export default function DashboardPage() {
           Add Child
         </Link>
       </div>
+
+      {needsRelationship && (
+        <div className="card mb-6 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 className="font-semibold text-ink">Set your role in the family</h2>
+            <p className="text-sm text-gray-600">
+              Tell us how you&apos;re related to your children so family members know who logged what.
+            </p>
+          </div>
+          <Link href="/dashboard/settings/family" className="btn-primary shrink-0">
+            Choose relationship
+          </Link>
+        </div>
+      )}
 
       {loading && <p className="text-gray-600">Loading children...</p>}
       {error && <p className="text-red-600">{error}</p>}
