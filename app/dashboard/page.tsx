@@ -2,8 +2,10 @@
 
 import ChildCard, { type DashboardChild } from '@/components/Child/ChildCard'
 import ConfirmDialog from '@/components/Common/ConfirmDialog'
+import RecentSongsGrid from '@/components/Song/RecentSongsGrid'
 import {
   useHistoryEnabled,
+  useReleaseDashboardGrid,
   useUpdatedChildrenCard,
 } from '@/components/LaunchDarkly/LaunchDarklyProvider'
 import { childDisplayName } from '@/lib/child-icon-ids'
@@ -16,6 +18,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const historyEnabled = useHistoryEnabled()
   const updatedChildrenCard = useUpdatedChildrenCard()
+  const releaseDashboardGrid = useReleaseDashboardGrid()
   const [error, setError] = useState<string | null>(null)
   const [childToDelete, setChildToDelete] = useState<DashboardChild | null>(null)
   const [deleting, setDeleting] = useState(false)
@@ -129,6 +132,8 @@ export default function DashboardPage() {
           />
         ))}
       </div>
+
+      {releaseDashboardGrid && <RecentSongsGrid />}
 
       {childToDelete && (
         <ConfirmDialog
